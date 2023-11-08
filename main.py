@@ -112,6 +112,7 @@ class sql:
         self.con.commit()
 
 
+
 class Main(QMainWindow):
     def __init__(self):
         super().__init__()
