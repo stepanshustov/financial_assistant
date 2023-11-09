@@ -19,7 +19,15 @@ def except_hook(cls, exception, traceback):
 
 
 def date_to_int(date: QDateEdit):
-    return date.date().year() * 1000 + date.date().month() * 100 + date.date().day()
+    return date.date().year() * 10000 + date.date().month() * 100 + date.date().day()
+
+
+def now_date_to_int():
+    return datetime.now().year * 10000 + datetime.now().month * 100 + datetime.now().day
+
+
+def now_date():
+    return datetime.now().year, datetime.now().month, datetime.now().day
 
 
 def intDate_to_str(dt: int):
@@ -111,16 +119,23 @@ class sql:
                             WHERE login = '{login}'""")
         self.con.commit()
 
+    def delete_income(self, login: str, id_: int):
+        self.cur.execute(f"""DELETE from {login + '_income'}
+                            where id = {id_}""")
+
+    def delete_expend(self, login: str, id_: int):
+        self.cur.execute(f"""DELETE from {login + '_expend'}
+                            where id = {id_}""")
 
 
 class Main(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.main_window()
+        self.start_window()
         self.sql = sql("users.sqlite")
 
-    def main_window(self):  # создание главного окна
-        uic.loadUi('main.ui', self)
+    def start_window(self):  # создание главного окна
+        uic.loadUi('start_window.ui', self)
         # self.setWindowState(Qt.WindowMaximized)
         self.registr.clicked.connect(self.reg_window)
 
@@ -130,11 +145,9 @@ class Main(QMainWindow):
 
     def reg_window(self):  # окно регистрации
         uic.loadUi("registr_1.ui", self)
-        self.setWindowFlag(Qt.WindowMinimizeButtonHint, True)
-        self.setWindowFlag(Qt.WindowMaximizeButtonHint, True)
         self.out_label.setText(
             f"\tДопустимы только латинские буквы, а так же цифры и простые символы {check_char}")
-        self.back_button.clicked.connect(self.main_window)
+        self.back_button.clicked.connect(self.start_window)
         self.reg_begin.clicked.connect(self.reg)
 
     def reg(self):  # регистрация нового пользователя
@@ -157,15 +170,15 @@ class Main(QMainWindow):
                 return
 
         if self.sql.add_user(log, pas, bal):
-            self.fun_no_name(*self.sql.get_user(log))
+            self.main_window(*self.sql.get_user(log))
         else:
             self.out_label.setText(f"""\t Пользователь с таким именем уже существует""")
 
     def auth_window(self):  # окно авторизации
         uic.loadUi("auth.ui", self)
-        self.setWindowFlag(Qt.WindowMinimizeButtonHint, True)
-        self.setWindowFlag(Qt.WindowMaximizeButtonHint, True)
-        self.back_button.clicked.connect(self.main_window)
+        # self.setWindowFlag(Qt.WindowMinimizeButtonHint, True)
+        # self.setWindowFlag(Qt.WindowMaximizeButtonHint, True)
+        self.back_button.clicked.connect(self.start_window)
         self.authButton.clicked.connect(self.auth)
 
     def auth(self):
@@ -173,45 +186,55 @@ class Main(QMainWindow):
         pas = self.password.text()
         user = self.sql.get_user(log)
         if user and user[2] == pas:
-            self.fun_no_name(*user)
+            self.main_window(*user)
             return
         self.out_label.setText("Неверный логин или пароль")
 
-    def update(self):
+    def update_table_list(self):  # отображение данных о доходах и расходах в таблицах
         expend_sort = self.sort_expen_comboBox.currentText()
         income_sort = self.sort_income_comboBox.currentText()
         expend_list = self.sql.get_user_expend_list(self.login)
         income_list = self.sql.get_user_income_list(self.login)
 
+        expen_date_begin = date_to_int(self.expenDateBegin)
+        expen_date_end = date_to_int(self.expenDateEnd)
+        income_date_begin = date_to_int(self.incomeDateBegin)
+        income_date_end = date_to_int(self.incomeDateEnd)
+
         expend_list.sort(key=self.sort_dict[expend_sort])
         income_list.sort(key=self.sort_dict[income_sort])
-        self.expenWidget.setRowCount(len(expend_list))
         self.s = 0
         self.expenWidget.setColumnCount(4)
         self.expenWidget.setHorizontalHeaderLabels(["название", "дата", "сумма", "тип"])
-        for i, string in enumerate(expend_list):
-            self.s -= string[4]  # отнимаем сумму расходов
+        for el in expend_list:
+            if el[3] <= now_date_to_int():
+                self.s += el[4]  # отнимаем сумму расходов
+        self.displayed_list_of_expenses = [el for el in expend_list if expen_date_begin <= el[3] <= expen_date_end]
+        for i, string in enumerate(self.displayed_list_of_expenses):
+            self.expenWidget.setRowCount(i + 1)
             for j, el in enumerate(
                     (string[1], intDate_to_str(string[3]), string[4], self.sql.get_name_expend_by_id(string[2]))):
                 self.expenWidget.setItem(i, j, QTableWidgetItem(str(el)))
         self.expenWidget.resizeColumnsToContents()
 
-        self.incomeWidget.setRowCount(len(income_list))
         self.incomeWidget.setColumnCount(4)
         self.incomeWidget.setHorizontalHeaderLabels(["название", "дата", "сумма", "тип"])
-        for i, string in enumerate(income_list):
-            self.s += string[4]  # прибавляем сумму доходов
+        for el in income_list:
+            if el[3] <= now_date_to_int():
+                self.s += el[4]  # прибавляем сумму доходов
+        self.displayed_list_of_incomes = [el for el in income_list if income_date_begin <= el[3] <= income_date_end]
+
+        for i, string in enumerate(self.displayed_list_of_incomes):
+            self.incomeWidget.setRowCount(i + 1)
             for j, el in enumerate(
                     (string[1], intDate_to_str(string[3]), string[4], self.sql.get_name_expend_by_id(string[2]))):
                 self.incomeWidget.setItem(i, j, QTableWidgetItem(str(el)))
         self.incomeWidget.resizeColumnsToContents()
-        self.balanceLabel.setText(f"Ваш текущий баланс: {self.balance + self.s}")
+        self.balanceLabel.setText(f"Ваш текущий баланс: {(self.balance + self.s):.{2}f}")
 
-    def fun_no_name(self, id_, login, password, balance):  #
+    def main_window(self, id_, login, password, balance):  #
 
-        uic.loadUi("no_name.ui", self)
-        # self.setWindowFlag(Qt.WindowMinimizeButtonHint, True)
-        self.setWindowFlag(Qt.WindowMaximizeButtonHint, True)
+        uic.loadUi("main.ui", self)
         self.login = login
         self.password = password
         self.id = id_
@@ -227,16 +250,25 @@ class Main(QMainWindow):
         self.sort_income_comboBox.addItems(self.sort_dict.keys())
         self.addExpenButton.clicked.connect(self.add_expen_dialog_window)
         self.addIncomeButton.clicked.connect(self.add_income_dialog_window)
-        self.sort_expen_comboBox.currentTextChanged.connect(self.update)
-        self.sort_income_comboBox.currentTextChanged.connect(self.update)
+        self.sort_expen_comboBox.currentTextChanged.connect(self.update_table_list)
+        self.sort_income_comboBox.currentTextChanged.connect(self.update_table_list)
         self.infoButton.clicked.connect(self.addition_menu)
         self.changeBalanceButton.clicked.connect(self.change_balance)
         self.statisticButton.clicked.connect(self.get_statistic_info)
-        self.update()
+        self.expenDateEnd.setDate(QDate(*now_date()))
+        self.incomeDateEnd.setDate(QDate(*now_date()))
+
+        self.expenDateBegin.editingFinished.connect(self.update_table_list)
+        self.expenDateEnd.editingFinished.connect(self.update_table_list)
+        self.incomeDateBegin.editingFinished.connect(self.update_table_list)
+        self.incomeDateEnd.editingFinished.connect(self.update_table_list)
+
+        self.update_table_list()
 
     def get_statistic_info(self):
-        qd = QDialog()
-
+        qd = QDialog(self)
+        lb = QLabel(qd)
+        lb.setText("доделать!")
         qd.exec()
 
     def change_balance(self):
@@ -245,7 +277,7 @@ class Main(QMainWindow):
             self.balance + self.s, 0, 99999999999, 2)
         if ok_pressed:
             self.balance -= self.balance + self.s - bal
-            self.balanceLabel.setText(f"Ваш текущий баланс: {self.balance + self.s}")
+            self.balanceLabel.setText(f"Ваш текущий баланс: {(self.balance + self.s):.{2}f}")
             self.sql.change_balance(self.login, self.balance)
 
     def addition_menu(self):
@@ -269,7 +301,7 @@ class Main(QMainWindow):
                     id_type = el[0]
                     break
             self.sql.add_expend(self.login, name, sm, id_type, date)
-            self.update()
+            self.update_table_list()
             qd.close()
 
         qd = QDialog(self)
@@ -297,7 +329,7 @@ class Main(QMainWindow):
                     id_type = el[0]
                     break
             self.sql.add_income(self.login, name, sm, id_type, date)
-            self.update()
+            self.update_table_list()
             qd.close()
 
         qd = QDialog(self)
@@ -312,8 +344,6 @@ class Main(QMainWindow):
     def out_creat_info(self):  # диалоговое окно с выводм информации о создателе проекта
         qd = QDialog(self)
         qd.setGeometry(self.x() + 200, self.y() + 200, 250, 100)
-        qd.setWindowFlag(Qt.WindowMinimizeButtonHint, True)
-        qd.setWindowFlag(Qt.WindowMaximizeButtonHint, True)
         label = QLabel(qd)
         label.setText(creat_info_text)
         label.setWordWrap(True)
