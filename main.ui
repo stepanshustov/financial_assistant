@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>733</width>
-    <height>666</height>
+    <width>802</width>
+    <height>677</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -15,6 +15,9 @@
     <width>500</width>
     <height>500</height>
    </size>
+  </property>
+  <property name="tabletTracking">
+   <bool>true</bool>
   </property>
   <property name="contextMenuPolicy">
    <enum>Qt::CustomContextMenu</enum>
@@ -110,36 +113,19 @@
       <property name="verticalSpacing">
        <number>10</number>
       </property>
+      <item row="0" column="0">
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
       <item row="1" column="1">
        <widget class="QPushButton" name="addIncomeButton">
         <property name="text">
          <string>Добавить доход</string>
         </property>
        </widget>
-      </item>
-      <item row="2" column="0">
-       <widget class="QComboBox" name="sort_expen_comboBox"/>
-      </item>
-      <item row="4" column="1">
-       <layout class="QVBoxLayout" name="verticalLayout_3">
-        <item>
-         <widget class="QLabel" name="label_4">
-          <property name="text">
-           <string>Доходы:</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <layout class="QGridLayout" name="gridLayout_2">
-          <item row="0" column="0">
-           <widget class="QTableWidget" name="incomeWidget"/>
-          </item>
-         </layout>
-        </item>
-       </layout>
-      </item>
-      <item row="2" column="1">
-       <widget class="QComboBox" name="sort_income_comboBox"/>
       </item>
       <item row="1" column="0">
        <widget class="QPushButton" name="addExpenButton">
@@ -148,14 +134,13 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="0">
-       <widget class="QLabel" name="label">
-        <property name="text">
-         <string/>
-        </property>
-       </widget>
+      <item row="3" column="1">
+       <widget class="QComboBox" name="sort_income_comboBox"/>
       </item>
-      <item row="4" column="0">
+      <item row="3" column="0">
+       <widget class="QComboBox" name="sort_expen_comboBox"/>
+      </item>
+      <item row="5" column="0">
        <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>
          <widget class="QLabel" name="label_3">
@@ -167,37 +152,38 @@
         <item>
          <layout class="QGridLayout" name="gridLayout">
           <item row="0" column="0">
-           <widget class="QTableWidget" name="expenWidget"/>
+           <widget class="QTableWidget" name="expenWidget">
+            <property name="mouseTracking">
+             <bool>true</bool>
+            </property>
+            <property name="tabletTracking">
+             <bool>true</bool>
+            </property>
+            <property name="autoFillBackground">
+             <bool>true</bool>
+            </property>
+            <property name="rowCount">
+             <number>5</number>
+            </property>
+            <property name="columnCount">
+             <number>4</number>
+            </property>
+            <row/>
+            <row/>
+            <row/>
+            <row/>
+            <row/>
+            <column/>
+            <column/>
+            <column/>
+            <column/>
+           </widget>
           </item>
          </layout>
         </item>
        </layout>
       </item>
-      <item row="3" column="0">
-       <layout class="QFormLayout" name="formLayout">
-        <item row="0" column="0">
-         <widget class="QLabel" name="label_2">
-          <property name="text">
-           <string>С:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1">
-         <widget class="QDateEdit" name="expenDateBegin"/>
-        </item>
-        <item row="1" column="0">
-         <widget class="QLabel" name="label_5">
-          <property name="text">
-           <string>До:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <widget class="QDateEdit" name="expenDateEnd"/>
-        </item>
-       </layout>
-      </item>
-      <item row="3" column="1">
+      <item row="4" column="1">
        <layout class="QFormLayout" name="formLayout_2">
         <item row="0" column="0">
          <widget class="QLabel" name="label_6">
@@ -221,6 +207,81 @@
         </item>
        </layout>
       </item>
+      <item row="4" column="0">
+       <layout class="QFormLayout" name="formLayout">
+        <item row="0" column="0">
+         <widget class="QLabel" name="label_2">
+          <property name="text">
+           <string>С:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QDateEdit" name="expenDateBegin"/>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="label_5">
+          <property name="text">
+           <string>До:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QDateEdit" name="expenDateEnd"/>
+        </item>
+       </layout>
+      </item>
+      <item row="5" column="1">
+       <layout class="QVBoxLayout" name="verticalLayout_3">
+        <item>
+         <widget class="QLabel" name="label_4">
+          <property name="text">
+           <string>Доходы:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QGridLayout" name="gridLayout_2">
+          <item row="0" column="0">
+           <widget class="QTableWidget" name="incomeWidget">
+            <property name="mouseTracking">
+             <bool>true</bool>
+            </property>
+            <property name="tabletTracking">
+             <bool>true</bool>
+            </property>
+            <property name="contextMenuPolicy">
+             <enum>Qt::DefaultContextMenu</enum>
+            </property>
+            <property name="acceptDrops">
+             <bool>false</bool>
+            </property>
+            <property name="autoFillBackground">
+             <bool>true</bool>
+            </property>
+            <property name="alternatingRowColors">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </item>
+      <item row="2" column="0">
+       <widget class="QPushButton" name="deleteExpenButton">
+        <property name="text">
+         <string>Удалить выбранные расходы</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QPushButton" name="deleteIncomeButton">
+        <property name="text">
+         <string>Удалить выбранные доходы</string>
+        </property>
+       </widget>
+      </item>
      </layout>
     </item>
     <item row="0" column="1">
@@ -238,7 +299,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>733</width>
+     <width>802</width>
      <height>21</height>
     </rect>
    </property>

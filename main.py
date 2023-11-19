@@ -10,6 +10,7 @@ from PyQt5 import QtCore, QtGui
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 import pyqtgraph as pg
+from PyQt5.QtCore import Qt
 
 y_disk = yadisk.YaDisk(token=y_token)
 
@@ -122,10 +123,12 @@ class sql:
     def delete_income(self, login: str, id_: int):
         self.cur.execute(f"""DELETE from {login + '_income'}
                             where id = {id_}""")
+        self.con.commit()
 
     def delete_expend(self, login: str, id_: int):
         self.cur.execute(f"""DELETE from {login + '_expend'}
                             where id = {id_}""")
+        self.con.commit()
 
 
 class Main(QMainWindow):
@@ -204,7 +207,7 @@ class Main(QMainWindow):
         expend_list.sort(key=self.sort_dict[expend_sort])
         income_list.sort(key=self.sort_dict[income_sort])
         self.s = 0
-        self.expenWidget.setColumnCount(4)
+        self.expenWidget.setColumnCount(5)
         self.expenWidget.setHorizontalHeaderLabels(["название", "дата", "сумма", "тип"])
         for el in expend_list:
             if el[3] <= now_date_to_int():
@@ -212,12 +215,16 @@ class Main(QMainWindow):
         self.displayed_list_of_expenses = [el for el in expend_list if expen_date_begin <= el[3] <= expen_date_end]
         for i, string in enumerate(self.displayed_list_of_expenses):
             self.expenWidget.setRowCount(i + 1)
+            checkbox_item = QTableWidgetItem()
+            checkbox_item.setFlags(QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled)
+            checkbox_item.setCheckState(QtCore.Qt.Unchecked)
             for j, el in enumerate(
                     (string[1], intDate_to_str(string[3]), string[4], self.sql.get_name_expend_by_id(string[2]))):
                 self.expenWidget.setItem(i, j, QTableWidgetItem(str(el)))
+            self.expenWidget.setItem(i, 4, checkbox_item)
         self.expenWidget.resizeColumnsToContents()
 
-        self.incomeWidget.setColumnCount(4)
+        self.incomeWidget.setColumnCount(5)
         self.incomeWidget.setHorizontalHeaderLabels(["название", "дата", "сумма", "тип"])
         for el in income_list:
             if el[3] <= now_date_to_int():
@@ -226,9 +233,13 @@ class Main(QMainWindow):
 
         for i, string in enumerate(self.displayed_list_of_incomes):
             self.incomeWidget.setRowCount(i + 1)
+            checkbox_item = QTableWidgetItem()
+            checkbox_item.setFlags(QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled)
+            checkbox_item.setCheckState(QtCore.Qt.Unchecked)
             for j, el in enumerate(
                     (string[1], intDate_to_str(string[3]), string[4], self.sql.get_name_expend_by_id(string[2]))):
                 self.incomeWidget.setItem(i, j, QTableWidgetItem(str(el)))
+            self.incomeWidget.setItem(i, 4, checkbox_item)
         self.incomeWidget.resizeColumnsToContents()
         self.balanceLabel.setText(f"Ваш текущий баланс: {(self.balance + self.s):.{2}f}")
 
@@ -255,6 +266,10 @@ class Main(QMainWindow):
         self.infoButton.clicked.connect(self.addition_menu)
         self.changeBalanceButton.clicked.connect(self.change_balance)
         self.statisticButton.clicked.connect(self.get_statistic_info)
+
+        self.deleteExpenButton.clicked.connect(self.delete_expen)
+        self.deleteIncomeButton.clicked.connect(self.delete_income)
+
         self.expenDateEnd.setDate(QDate(*now_date()))
         self.incomeDateEnd.setDate(QDate(*now_date()))
 
@@ -264,6 +279,22 @@ class Main(QMainWindow):
         self.incomeDateEnd.editingFinished.connect(self.update_table_list)
 
         self.update_table_list()
+
+    def delete_expen(self):
+        for i in range(self.expenWidget.rowCount()):
+            if self.expenWidget.item(i, 4).checkState() == Qt.Checked:
+                self.sql.delete_expend(self.login, self.displayed_list_of_expenses[i][0])
+        self.update_table_list()
+
+    def delete_income(self):
+        for i in range(self.incomeWidget.rowCount()):
+            if self.incomeWidget.item(i, 4).checkState() == Qt.Checked:
+                self.sql.delete_income(self.login, self.displayed_list_of_incomes[i][0])
+        self.update_table_list()
+
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_Delete:
+            print(self.expenWidget.currentRow())
 
     def get_statistic_info(self):
         qd = QDialog(self)
