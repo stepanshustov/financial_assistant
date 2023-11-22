@@ -105,6 +105,13 @@
       </item>
      </layout>
     </item>
+    <item row="0" column="1">
+     <widget class="QLabel" name="out_label">
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+    </item>
     <item row="1" column="0" colspan="3">
      <layout class="QGridLayout" name="gridLayout_3">
       <property name="horizontalSpacing">
@@ -113,34 +120,64 @@
       <property name="verticalSpacing">
        <number>10</number>
       </property>
-      <item row="0" column="0">
-       <widget class="QLabel" name="label">
-        <property name="text">
-         <string/>
-        </property>
-       </widget>
+      <item row="3" column="0">
+       <widget class="QComboBox" name="typeExpenComboBox"/>
       </item>
-      <item row="1" column="1">
+      <item row="3" column="1">
+       <widget class="QComboBox" name="typeIncomeComboBox"/>
+      </item>
+      <item row="0" column="1">
        <widget class="QPushButton" name="addIncomeButton">
         <property name="text">
          <string>Добавить доход</string>
         </property>
        </widget>
       </item>
-      <item row="1" column="0">
+      <item row="5" column="0">
+       <widget class="QComboBox" name="sort_expen_comboBox"/>
+      </item>
+      <item row="5" column="1">
+       <widget class="QComboBox" name="sort_income_comboBox"/>
+      </item>
+      <item row="0" column="0">
        <widget class="QPushButton" name="addExpenButton">
         <property name="text">
          <string>Добавить расход</string>
         </property>
        </widget>
       </item>
-      <item row="3" column="1">
-       <widget class="QComboBox" name="sort_income_comboBox"/>
+      <item row="4" column="0">
+       <widget class="QLabel" name="label_8">
+        <property name="text">
+         <string>Отсортировать по:</string>
+        </property>
+       </widget>
       </item>
-      <item row="3" column="0">
-       <widget class="QComboBox" name="sort_expen_comboBox"/>
+      <item row="6" column="1">
+       <layout class="QFormLayout" name="formLayout_2">
+        <item row="0" column="0">
+         <widget class="QLabel" name="label_6">
+          <property name="text">
+           <string>С:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QDateEdit" name="incomeDateBegin"/>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="label_7">
+          <property name="text">
+           <string>До:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QDateEdit" name="incomeDateEnd"/>
+        </item>
+       </layout>
       </item>
-      <item row="5" column="0">
+      <item row="7" column="0">
        <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>
          <widget class="QLabel" name="label_3">
@@ -183,31 +220,7 @@
         </item>
        </layout>
       </item>
-      <item row="4" column="1">
-       <layout class="QFormLayout" name="formLayout_2">
-        <item row="0" column="0">
-         <widget class="QLabel" name="label_6">
-          <property name="text">
-           <string>С:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1">
-         <widget class="QDateEdit" name="incomeDateBegin"/>
-        </item>
-        <item row="1" column="0">
-         <widget class="QLabel" name="label_7">
-          <property name="text">
-           <string>До:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <widget class="QDateEdit" name="incomeDateEnd"/>
-        </item>
-       </layout>
-      </item>
-      <item row="4" column="0">
+      <item row="6" column="0">
        <layout class="QFormLayout" name="formLayout">
         <item row="0" column="0">
          <widget class="QLabel" name="label_2">
@@ -231,7 +244,7 @@
         </item>
        </layout>
       </item>
-      <item row="5" column="1">
+      <item row="7" column="1">
        <layout class="QVBoxLayout" name="verticalLayout_3">
         <item>
          <widget class="QLabel" name="label_4">
@@ -268,28 +281,42 @@
         </item>
        </layout>
       </item>
-      <item row="2" column="0">
+      <item row="1" column="0">
        <widget class="QPushButton" name="deleteExpenButton">
         <property name="text">
          <string>Удалить выбранные расходы</string>
         </property>
        </widget>
       </item>
-      <item row="2" column="1">
+      <item row="1" column="1">
        <widget class="QPushButton" name="deleteIncomeButton">
         <property name="text">
          <string>Удалить выбранные доходы</string>
         </property>
        </widget>
       </item>
+      <item row="4" column="1">
+       <widget class="QLabel" name="label_9">
+        <property name="text">
+         <string>Отсортировать по:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>Тип доходов:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QLabel" name="label_10">
+        <property name="text">
+         <string>Тип расходов:</string>
+        </property>
+       </widget>
+      </item>
      </layout>
-    </item>
-    <item row="0" column="1">
-     <widget class="QLabel" name="out_label">
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
     </item>
    </layout>
   </widget>

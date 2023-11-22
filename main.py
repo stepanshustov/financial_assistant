@@ -1,6 +1,5 @@
 from addition import *
 
-import yadisk
 import sqlite3
 import sys
 from datetime import datetime
@@ -12,8 +11,6 @@ from PyQt5.QtCore import *
 import pyqtgraph as pg
 from PyQt5.QtCore import Qt
 
-y_disk = yadisk.YaDisk(token=y_token)
-
 
 def except_hook(cls, exception, traceback):
     sys.__excepthook__(cls, exception, traceback)
@@ -21,21 +18,6 @@ def except_hook(cls, exception, traceback):
 
 def date_to_int(date: QDateEdit):
     return date.date().year() * 10000 + date.date().month() * 100 + date.date().day()
-
-
-def now_date_to_int():
-    return datetime.now().year * 10000 + datetime.now().month * 100 + datetime.now().day
-
-
-def now_date():
-    return datetime.now().year, datetime.now().month, datetime.now().day
-
-
-def intDate_to_str(dt: int):
-    day = '0' + str(dt % 100)
-    month = '0' + str(dt // 100 % 100)
-    year = '000' + str(dt // 10000)
-    return f"{day[-2:]}.{month[-2:]}.{year[-4:]}"
 
 
 class sql:
@@ -93,7 +75,7 @@ class sql:
         return self.cur.execute(f"""SELECT title FROM type_income WHERE id = {id_}""").fetchall()[0][0]
 
     def get_all_expend_list(self):
-        return self.cur.execute("SELECT * FROM type_expend").fetchall()
+        return self.cur.execute("SELECT * FROM type_expend ORDER BY title").fetchall()
 
     def get_user_expend_list(self, login: str):
         return self.cur.execute(f"SELECT * FROM {login + '_expend'}").fetchall()
@@ -101,8 +83,8 @@ class sql:
     def get_user_income_list(self, login: str):
         return self.cur.execute(f"SELECT * FROM {login + '_income'}").fetchall()
 
-    def get_income_list(self):
-        return self.cur.execute("SELECT * FROM type_income").fetchall()
+    def get_all_income_list(self):
+        return self.cur.execute("SELECT * FROM type_income ORDER BY title").fetchall()
 
     def add_income(self, login: str, title: str, money: float, type_: int, data: int):
         self.cur.execute(f"""INSERT INTO {login + '_income'} (title, money, type, data) 
@@ -194,11 +176,12 @@ class Main(QMainWindow):
         self.out_label.setText("Неверный логин или пароль")
 
     def update_table_list(self):  # отображение данных о доходах и расходах в таблицах
-        expend_sort = self.sort_expen_comboBox.currentText()
-        income_sort = self.sort_income_comboBox.currentText()
-        expend_list = self.sql.get_user_expend_list(self.login)
-        income_list = self.sql.get_user_income_list(self.login)
+        expend_sort = self.sort_expen_comboBox.currentText()  # тип сортировки расходов
+        income_sort = self.sort_income_comboBox.currentText()  # тип сортировки доходов
+        expend_list = self.sql.get_user_expend_list(self.login)  # список всех расходов
+        income_list = self.sql.get_user_income_list(self.login)  # список всех доходов
 
+        # Временной интервал доходов и расходов
         expen_date_begin = date_to_int(self.expenDateBegin)
         expen_date_end = date_to_int(self.expenDateEnd)
         income_date_begin = date_to_int(self.incomeDateBegin)
@@ -206,18 +189,24 @@ class Main(QMainWindow):
 
         expend_list.sort(key=self.sort_dict[expend_sort])
         income_list.sort(key=self.sort_dict[income_sort])
-        self.s = 0
+
+        expen_type = self.typeExpenComboBox.currentText()  # тип отображаемых расходов
+        income_type = self.typeIncomeComboBox.currentText()  # тип отображаемых доходов
+
+        self.s = 0  # сумма всех доходов и расходов с учётом знака
         self.expenWidget.setColumnCount(5)
         self.expenWidget.setHorizontalHeaderLabels(["название", "дата", "сумма", "тип"])
         for el in expend_list:
             if el[3] <= now_date_to_int():
                 self.s += el[4]  # отнимаем сумму расходов
         self.displayed_list_of_expenses = [el for el in expend_list if expen_date_begin <= el[3] <= expen_date_end]
+
         for i, string in enumerate(self.displayed_list_of_expenses):
             self.expenWidget.setRowCount(i + 1)
             checkbox_item = QTableWidgetItem()
-            checkbox_item.setFlags(QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled)
-            checkbox_item.setCheckState(QtCore.Qt.Unchecked)
+            checkbox_item.setFlags(
+                QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled)
+            checkbox_item.setCheckState(QtCore.Qt.Unchecked)  # устанавливаем галочки для удаления расходов
             for j, el in enumerate(
                     (string[1], intDate_to_str(string[3]), string[4], self.sql.get_name_expend_by_id(string[2]))):
                 self.expenWidget.setItem(i, j, QTableWidgetItem(str(el)))
@@ -234,8 +223,9 @@ class Main(QMainWindow):
         for i, string in enumerate(self.displayed_list_of_incomes):
             self.incomeWidget.setRowCount(i + 1)
             checkbox_item = QTableWidgetItem()
-            checkbox_item.setFlags(QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled)
-            checkbox_item.setCheckState(QtCore.Qt.Unchecked)
+            checkbox_item.setFlags(
+                QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled)
+            checkbox_item.setCheckState(QtCore.Qt.Unchecked)  # устанавливаем галочки для удаления доходов
             for j, el in enumerate(
                     (string[1], intDate_to_str(string[3]), string[4], self.sql.get_name_expend_by_id(string[2]))):
                 self.incomeWidget.setItem(i, j, QTableWidgetItem(str(el)))
@@ -367,7 +357,7 @@ class Main(QMainWindow):
         uic.loadUi("add_.ui", qd)
         dt_now = [datetime.now().year, datetime.now().month, datetime.now().day]
         qd.dateEdit.setDate(QDate(*dt_now))
-        type_lst = self.sql.get_income_list()  # список с типами доходов
+        type_lst = self.sql.get_all_income_list()  # список с типами доходов
         qd.typeComboBox.addItems([el[1] for el in type_lst])
         qd.pushButton.clicked.connect(fun)
         qd.exec()
