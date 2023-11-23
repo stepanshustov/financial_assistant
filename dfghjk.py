@@ -20,21 +20,7 @@ def except_hook(cls, exception, traceback):
 class Main(QMainWindow):
     def __init__(self):
         super().__init__()
-
-        self.table_widget = QTableWidget()
-        self.setCentralWidget(self.table_widget)
-
-        # Устанавливаем количество строк и столбцов в таблице
-        self.table_widget.setRowCount(5)
-        self.table_widget.setColumnCount(3)
-
-        # Создаем цикл для добавления чекбоксов в каждую ячейку таблицы
-        for row in range(self.table_widget.rowCount()):
-            for column in range(self.table_widget.columnCount()):
-                checkbox_item = QTableWidgetItem()
-                checkbox_item.setFlags(QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled)
-                checkbox_item.setCheckState(QtCore.Qt.Unchecked)
-                self.table_widget.setItem(row, column, checkbox_item)
+        uic.loadUi('untitled.ui', self)
 
 
 if __name__ == '__main__':

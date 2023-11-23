@@ -25,6 +25,9 @@
   <property name="windowTitle">
    <string>Финансовый помошник</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">alternate-background-color: qlineargradient(spread:reflect, x1:0, y1:0, x2:1, y2:1, stop:0.102273 rgba(221, 255, 242, 118), stop:1 rgba(255, 255, 255, 255));</string>
+  </property>
   <property name="toolButtonStyle">
    <enum>Qt::ToolButtonTextOnly</enum>
   </property>
@@ -56,6 +59,11 @@
         <height>50</height>
        </size>
       </property>
+      <property name="styleSheet">
+       <string notr="true">
+font: 20pt &quot;MS Shell Dlg 2&quot;;
+</string>
+      </property>
       <property name="text">
        <string>≡</string>
       </property>
@@ -79,6 +87,9 @@
           <width>100</width>
           <height>30</height>
          </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">font: 10pt &quot;MS Shell Dlg 2&quot;;</string>
         </property>
         <property name="text">
          <string>Ваш текущий баланс:</string>
@@ -121,13 +132,16 @@
        <number>10</number>
       </property>
       <item row="3" column="0">
-       <widget class="QComboBox" name="typeExpenComboBox"/>
+       <widget class="QComboBox" name="type_expen_comboBox"/>
       </item>
       <item row="3" column="1">
-       <widget class="QComboBox" name="typeIncomeComboBox"/>
+       <widget class="QComboBox" name="type_income_comboBox"/>
       </item>
       <item row="0" column="1">
        <widget class="QPushButton" name="addIncomeButton">
+        <property name="styleSheet">
+         <string notr="true">font: 10pt &quot;MS Shell Dlg 2&quot;;</string>
+        </property>
         <property name="text">
          <string>Добавить доход</string>
         </property>
@@ -141,6 +155,9 @@
       </item>
       <item row="0" column="0">
        <widget class="QPushButton" name="addExpenButton">
+        <property name="styleSheet">
+         <string notr="true">font: 10pt &quot;MS Shell Dlg 2&quot;;</string>
+        </property>
         <property name="text">
          <string>Добавить расход</string>
         </property>
@@ -148,6 +165,9 @@
       </item>
       <item row="4" column="0">
        <widget class="QLabel" name="label_8">
+        <property name="styleSheet">
+         <string notr="true">font: 10pt &quot;MS Shell Dlg 2&quot;;</string>
+        </property>
         <property name="text">
          <string>Отсортировать по:</string>
         </property>
@@ -283,6 +303,9 @@
       </item>
       <item row="1" column="0">
        <widget class="QPushButton" name="deleteExpenButton">
+        <property name="styleSheet">
+         <string notr="true">font: 10pt &quot;MS Shell Dlg 2&quot;;</string>
+        </property>
         <property name="text">
          <string>Удалить выбранные расходы</string>
         </property>
@@ -290,6 +313,9 @@
       </item>
       <item row="1" column="1">
        <widget class="QPushButton" name="deleteIncomeButton">
+        <property name="styleSheet">
+         <string notr="true">font: 10pt &quot;MS Shell Dlg 2&quot;;</string>
+        </property>
         <property name="text">
          <string>Удалить выбранные доходы</string>
         </property>
@@ -297,6 +323,9 @@
       </item>
       <item row="4" column="1">
        <widget class="QLabel" name="label_9">
+        <property name="styleSheet">
+         <string notr="true">font: 10pt &quot;MS Shell Dlg 2&quot;;</string>
+        </property>
         <property name="text">
          <string>Отсортировать по:</string>
         </property>
@@ -304,6 +333,9 @@
       </item>
       <item row="2" column="0">
        <widget class="QLabel" name="label">
+        <property name="styleSheet">
+         <string notr="true">font: 10pt &quot;MS Shell Dlg 2&quot;;</string>
+        </property>
         <property name="text">
          <string>Тип доходов:</string>
         </property>
@@ -311,6 +343,9 @@
       </item>
       <item row="2" column="1">
        <widget class="QLabel" name="label_10">
+        <property name="styleSheet">
+         <string notr="true">font: 10pt &quot;MS Shell Dlg 2&quot;;</string>
+        </property>
         <property name="text">
          <string>Тип расходов:</string>
         </property>

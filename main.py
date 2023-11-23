@@ -1,6 +1,5 @@
-from addition import *
-
 import sqlite3
+from addition import *  # здесь хранятся дополнительные функции, константы, а так же класс Sql для работы с базой данных
 import sys
 from datetime import datetime
 from PyQt5.QtWidgets import *
@@ -16,108 +15,11 @@ def except_hook(cls, exception, traceback):
     sys.__excepthook__(cls, exception, traceback)
 
 
-def date_to_int(date: QDateEdit):
-    return date.date().year() * 10000 + date.date().month() * 100 + date.date().day()
-
-
-class sql:
-    def __init__(self, file_name: str):
-        self.file_name = file_name
-        self.con = sqlite3.connect(file_name)
-        self.cur = self.con.cursor()
-
-    def get_users(self):  # полностью работает
-        return self.cur.execute("""SELECT * FROM log_pass""").fetchall()
-
-    def get_user(self, login):  # полностью работает
-        mas = self.cur.execute(f"""SELECT * FROM log_pass WHERE login = '{login}'""").fetchall()
-        if len(mas):
-            return mas[0]
-        return False
-
-    def add_user(self, login: str, password: str, balance: float):
-        if self.get_user(login):
-            return False
-        self.cur.execute(
-            f"""INSERT INTO log_pass(login, password, balance) VALUES('{login}', '{password}', {balance})""")
-        self.cur.execute(f"""
-            CREATE TABLE {login + '_income'} (
-             
-            id INTEGER PRIMARY KEY NOT NULL,
-             
-            title TEXT,
-            
-            type INTEGER,
-            
-            data INTEGER,
-            
-            money NUMERIC)""")
-
-        self.cur.execute(f"""
-            CREATE TABLE {login + '_expend'} (
-             
-            id INTEGER PRIMARY KEY NOT NULL,
-             
-            title TEXT,
-            
-            type INTEGER,
-            
-            data INTEGER,
-            
-            money NUMERIC)""")
-        self.con.commit()
-        return True
-
-    def get_name_expend_by_id(self, id_: int):
-        return self.cur.execute(f"""SELECT title FROM type_expend WHERE id = {id_}""").fetchall()[0][0]
-
-    def get_name_income_by_id(self, id_: int):
-        return self.cur.execute(f"""SELECT title FROM type_income WHERE id = {id_}""").fetchall()[0][0]
-
-    def get_all_expend_list(self):
-        return self.cur.execute("SELECT * FROM type_expend ORDER BY title").fetchall()
-
-    def get_user_expend_list(self, login: str):
-        return self.cur.execute(f"SELECT * FROM {login + '_expend'}").fetchall()
-
-    def get_user_income_list(self, login: str):
-        return self.cur.execute(f"SELECT * FROM {login + '_income'}").fetchall()
-
-    def get_all_income_list(self):
-        return self.cur.execute("SELECT * FROM type_income ORDER BY title").fetchall()
-
-    def add_income(self, login: str, title: str, money: float, type_: int, data: int):
-        self.cur.execute(f"""INSERT INTO {login + '_income'} (title, money, type, data) 
-            VALUES ('{title}', {money}, {type_}, {data})""")
-        self.con.commit()
-
-    def add_expend(self, login: str, title: str, money: float, type_: int, data: int):
-        self.cur.execute(f"""INSERT INTO {login + '_expend'} (title, money, type, data) 
-            VALUES ('{title}', {money}, {type_}, {data})""")
-        self.con.commit()
-
-    def change_balance(self, login: str, new_balance: float):
-        self.cur.execute(f"""UPDATE log_pass
-                            SET balance = {new_balance}
-                            WHERE login = '{login}'""")
-        self.con.commit()
-
-    def delete_income(self, login: str, id_: int):
-        self.cur.execute(f"""DELETE from {login + '_income'}
-                            where id = {id_}""")
-        self.con.commit()
-
-    def delete_expend(self, login: str, id_: int):
-        self.cur.execute(f"""DELETE from {login + '_expend'}
-                            where id = {id_}""")
-        self.con.commit()
-
-
 class Main(QMainWindow):
     def __init__(self):
         super().__init__()
         self.start_window()
-        self.sql = sql("users.sqlite")
+        self.sql = Sql("users.sqlite")
 
     def start_window(self):  # создание главного окна
         uic.loadUi('start_window.ui', self)
@@ -190,8 +92,13 @@ class Main(QMainWindow):
         expend_list.sort(key=self.sort_dict[expend_sort])
         income_list.sort(key=self.sort_dict[income_sort])
 
-        expen_type = self.typeExpenComboBox.currentText()  # тип отображаемых расходов
-        income_type = self.typeIncomeComboBox.currentText()  # тип отображаемых доходов
+        expen_type = self.type_expen_comboBox.currentText()  # тип отображаемых расходов
+        if expen_type == 'Все':
+            expen_type = -1
+        else:
+            expen_type = self.sql.get_name_income_by_id()
+
+        income_type = self.type_income_comboBox.currentText()  # тип отображаемых доходов
 
         self.s = 0  # сумма всех доходов и расходов с учётом знака
         self.expenWidget.setColumnCount(5)
@@ -200,6 +107,8 @@ class Main(QMainWindow):
             if el[3] <= now_date_to_int():
                 self.s += el[4]  # отнимаем сумму расходов
         self.displayed_list_of_expenses = [el for el in expend_list if expen_date_begin <= el[3] <= expen_date_end]
+        self.displayed_list_of_expenses = [el for el in self.displayed_list_of_expenses if
+                                           el[2] == expen_type or expen_type == -1]
 
         for i, string in enumerate(self.displayed_list_of_expenses):
             self.expenWidget.setRowCount(i + 1)
@@ -249,10 +158,13 @@ class Main(QMainWindow):
         }
         self.sort_expen_comboBox.addItems(self.sort_dict.keys())
         self.sort_income_comboBox.addItems(self.sort_dict.keys())
+
         self.addExpenButton.clicked.connect(self.add_expen_dialog_window)
         self.addIncomeButton.clicked.connect(self.add_income_dialog_window)
+
         self.sort_expen_comboBox.currentTextChanged.connect(self.update_table_list)
         self.sort_income_comboBox.currentTextChanged.connect(self.update_table_list)
+
         self.infoButton.clicked.connect(self.addition_menu)
         self.changeBalanceButton.clicked.connect(self.change_balance)
         self.statisticButton.clicked.connect(self.get_statistic_info)
@@ -268,6 +180,12 @@ class Main(QMainWindow):
         self.incomeDateBegin.editingFinished.connect(self.update_table_list)
         self.incomeDateEnd.editingFinished.connect(self.update_table_list)
 
+        self.type_expen_comboBox.addItems([el[1] for el in self.sql.get_all_expend_list()])
+        self.type_income_comboBox.addItems([el[1] for el in self.sql.get_all_income_list()])
+
+        self.type_expen_comboBox.currentTextChanged.connect(self.update_table_list)
+        self.type_income_comboBox.currentTextChanged.connect(self.update_table_list)
+
         self.update_table_list()
 
     def delete_expen(self):
@@ -281,10 +199,6 @@ class Main(QMainWindow):
             if self.incomeWidget.item(i, 4).checkState() == Qt.Checked:
                 self.sql.delete_income(self.login, self.displayed_list_of_incomes[i][0])
         self.update_table_list()
-
-    def keyPressEvent(self, event):
-        if event.key() == Qt.Key_Delete:
-            print(self.expenWidget.currentRow())
 
     def get_statistic_info(self):
         qd = QDialog(self)
