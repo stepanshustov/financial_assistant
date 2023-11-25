@@ -231,15 +231,14 @@ class MainWindow(QMainWindow):
                     print(self.creat_income_html(), file=f_html)
             file_out_name = QFileDialog.getSaveFileName(self, "Введите название файла", '', 'PDF (*.pdf)')[0]
             if file_out_name:
-                # qd = QDialog(self)
-                # qd.setGeometry(500, 500, 300, 300)
-                # lab = QLabel(qd)
-                # lab.setGeometry(10, 10, 280, 280)
-                # lab.setText("Подождите, идёт сохранение файла...")
-                # qd.exec()
                 path = os.path.abspath('text.html')
                 converter.convert(f'file:///{path}', file_out_name)
-                # qd.close()
+                qd = QDialog(self)
+                qd.setGeometry(100, 100, 300, 100)
+                lab = QLabel(qd)
+                lab.setGeometry(10, 10, 280, 90)
+                lab.setText("Успешно сохранено")
+                qd.exec()
 
     def creat_expen_html(self):  # Возвращает текст в формате HTML для расходов
         expen_date_begin_str = intDate_to_str(self.expen_date_begin)  # дата начала в виде строки
