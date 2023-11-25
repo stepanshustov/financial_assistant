@@ -389,13 +389,6 @@ font: 20pt &quot;MS Shell Dlg 2&quot;;
         </property>
        </widget>
       </item>
-      <item>
-       <widget class="QPushButton" name="print_pushButton_2">
-        <property name="text">
-         <string> Печать </string>
-        </property>
-       </widget>
-      </item>
      </layout>
     </item>
    </layout>
