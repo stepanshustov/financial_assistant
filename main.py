@@ -32,7 +32,7 @@ class MainWindow(QMainWindow):
         self.project_info.clicked.connect(self.out_project_info)
 
     def reg_window(self):  # окно регистрации
-        uic.loadUi("registr_1.ui", self)
+        uic.loadUi("registr_window.ui", self)
         self.out_label.setText(
             f"\tДопустимы только латинские буквы, а так же цифры и простые символы {check_char}")
         self.back_button.clicked.connect(self.start_window)
@@ -63,7 +63,7 @@ class MainWindow(QMainWindow):
             self.out_label.setText(f"""\t Пользователь с таким именем уже существует""")
 
     def auth_window(self):  # окно авторизации
-        uic.loadUi("auth.ui", self)
+        uic.loadUi("auth_window.ui", self)
         # self.setWindowFlag(Qt.WindowMinimizeButtonHint, True)
         # self.setWindowFlag(Qt.WindowMaximizeButtonHint, True)
         self.back_button.clicked.connect(self.start_window)
@@ -169,7 +169,7 @@ class MainWindow(QMainWindow):
 
     def main_window(self, id_, login, password, balance):  # Основное окно программы
 
-        uic.loadUi("main.ui", self)
+        uic.loadUi("main_window.ui", self)
         self.login = login
         self.password = password
         self.id = id_
@@ -304,7 +304,7 @@ class MainWindow(QMainWindow):
 
     def addition_menu(self):
         qd = QDialog(self)
-        uic.loadUi("addition_dialog.ui", qd)
+        uic.loadUi("info_dialog.ui", qd)
         qd.exec()
 
     def add_expen_dialog_window(self):  # диалоговое окно для добавления нового расхода
