@@ -21,6 +21,7 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.start_window()
         self.sql = Sql_users("users.sqlite")
+        print(self.sql.get_users())
 
     def start_window(self):  # создание главного окна
         uic.loadUi('start_window.ui', self)
@@ -157,7 +158,7 @@ class MainWindow(QMainWindow):
             checkbox_item.setCheckState(QtCore.Qt.Unchecked)  # устанавливаем галочки для удаления доходов
             rez_income += string[4]
             for j, el in enumerate(
-                    (string[1], intDate_to_str(string[3]), string[4], self.sql.get_name_expend_by_id(string[2]))):
+                    (string[1], intDate_to_str(string[3]), string[4], self.sql.get_name_income_by_id(string[2]))):
                 self.incomeWidget.setItem(i, j, QTableWidgetItem(str(el)))
 
             self.incomeWidget.setItem(i, 4, checkbox_item)
