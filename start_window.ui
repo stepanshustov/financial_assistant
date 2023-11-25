@@ -7,11 +7,14 @@
     <x>0</x>
     <y>0</y>
     <width>585</width>
-    <height>420</height>
+    <height>419</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Финансовый ассистент</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true"/>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
@@ -68,7 +71,8 @@
        </size>
       </property>
       <property name="styleSheet">
-       <string notr="true"/>
+       <string notr="true">font: 75 12pt &quot;MS Shell Dlg 2&quot;;
+color: rgb(0, 85, 0)</string>
       </property>
       <property name="text">
        <string>Вход</string>
@@ -97,6 +101,9 @@
     </item>
     <item row="0" column="5">
      <widget class="QPushButton" name="project_info">
+      <property name="styleSheet">
+       <string notr="true">font: 10pt &quot;MS Shell Dlg 2&quot;;</string>
+      </property>
       <property name="text">
        <string>о проекте</string>
       </property>
@@ -133,7 +140,8 @@
        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Регистрация&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
       <property name="styleSheet">
-       <string notr="true"/>
+       <string notr="true">font: 75 12pt &quot;MS Shell Dlg 2&quot;;
+color: rgb(170, 0, 0)</string>
       </property>
       <property name="text">
        <string>Регистрация</string>
@@ -148,6 +156,9 @@
     </item>
     <item row="0" column="4">
      <widget class="QPushButton" name="creator_info">
+      <property name="styleSheet">
+       <string notr="true">font: 10pt &quot;MS Shell Dlg 2&quot;;</string>
+      </property>
       <property name="text">
        <string>о создателе</string>
       </property>

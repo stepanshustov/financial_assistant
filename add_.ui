@@ -2,12 +2,15 @@
 <ui version="4.0">
  <class>fghj</class>
  <widget class="QWidget" name="fghj">
+  <property name="windowModality">
+   <enum>Qt::NonModal</enum>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>566</width>
-    <height>391</height>
+    <width>526</width>
+    <height>448</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -17,9 +20,15 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string>Добавление</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout" rowstretch="0,0,0,0,0,0,0,0">
+  <property name="styleSheet">
+   <string notr="true">font: 10pt &quot;MS Shell Dlg 2&quot;;</string>
+  </property>
+  <property name="windowFilePath">
+   <string>Финансовый ассистент</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout" rowstretch="0,0,0,0,0,0">
    <property name="horizontalSpacing">
     <number>10</number>
    </property>

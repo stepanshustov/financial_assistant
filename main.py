@@ -7,19 +7,20 @@ from PyQt5 import uic
 from PyQt5 import QtCore, QtGui
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
-import pyqtgraph as pg
 from PyQt5.QtCore import Qt
+import os
+from pyhtml2pdf import converter
 
 
 def except_hook(cls, exception, traceback):
     sys.__excepthook__(cls, exception, traceback)
 
 
-class Main(QMainWindow):
+class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.start_window()
-        self.sql = Sql("users.sqlite")
+        self.sql = Sql_users("users.sqlite")
 
     def start_window(self):  # создание главного окна
         uic.loadUi('start_window.ui', self)
@@ -35,9 +36,9 @@ class Main(QMainWindow):
         self.out_label.setText(
             f"\tДопустимы только латинские буквы, а так же цифры и простые символы {check_char}")
         self.back_button.clicked.connect(self.start_window)
-        self.reg_begin.clicked.connect(self.reg)
+        self.reg_begin.clicked.connect(self.reg_new_user)
 
-    def reg(self):  # регистрация нового пользователя
+    def reg_new_user(self):  # регистрация нового пользователя
         log = self.login.text()
         pas = self.password.text()
         bal = self.money.value()
@@ -66,9 +67,9 @@ class Main(QMainWindow):
         # self.setWindowFlag(Qt.WindowMinimizeButtonHint, True)
         # self.setWindowFlag(Qt.WindowMaximizeButtonHint, True)
         self.back_button.clicked.connect(self.start_window)
-        self.authButton.clicked.connect(self.auth)
+        self.authButton.clicked.connect(self.auth_user)
 
-    def auth(self):
+    def auth_user(self):
         log = self.login.text()
         pas = self.password.text()
         user = self.sql.get_user(log)
@@ -84,65 +85,89 @@ class Main(QMainWindow):
         income_list = self.sql.get_user_income_list(self.login)  # список всех доходов
 
         # Временной интервал доходов и расходов
-        expen_date_begin = date_to_int(self.expenDateBegin)
-        expen_date_end = date_to_int(self.expenDateEnd)
-        income_date_begin = date_to_int(self.incomeDateBegin)
-        income_date_end = date_to_int(self.incomeDateEnd)
+        self.expen_date_begin = date_to_int(self.expenDateBegin)
+        self.expen_date_end = date_to_int(self.expenDateEnd)
+        self.income_date_begin = date_to_int(self.incomeDateBegin)
+        self.income_date_end = date_to_int(self.incomeDateEnd)
 
         expend_list.sort(key=self.sort_dict[expend_sort])
         income_list.sort(key=self.sort_dict[income_sort])
 
-        expen_type = self.type_expen_comboBox.currentText()  # тип отображаемых расходов
-        if expen_type == 'Все':
-            expen_type = -1
+        self.expen_type = self.type_expen_comboBox.currentText()  # тип отображаемых расходов
+        if self.expen_type == 'Все':
+            self.expen_type = -1
         else:
-            expen_type = self.sql.get_name_income_by_id()
+            self.expen_type = self.sql.get_id_expen_by_name(self.expen_type)
 
-        income_type = self.type_income_comboBox.currentText()  # тип отображаемых доходов
+        self.income_type = self.type_income_comboBox.currentText()  # тип отображаемых доходов
+
+        if self.income_type == 'Все':
+            self.income_type = -1
+        else:
+            self.income_type = self.sql.get_id_income_by_name(self.income_type)
 
         self.s = 0  # сумма всех доходов и расходов с учётом знака
         self.expenWidget.setColumnCount(5)
         self.expenWidget.setHorizontalHeaderLabels(["название", "дата", "сумма", "тип"])
         for el in expend_list:
             if el[3] <= now_date_to_int():
-                self.s += el[4]  # отнимаем сумму расходов
-        self.displayed_list_of_expenses = [el for el in expend_list if expen_date_begin <= el[3] <= expen_date_end]
+                self.s -= el[4]  # отнимаем сумму расходов
+        # Отделяем нужное по дате и типу и создаём список, для таблицы
+        self.displayed_list_of_expenses = [el for el in expend_list if
+                                           self.expen_date_begin <= el[3] <= self.expen_date_end]
         self.displayed_list_of_expenses = [el for el in self.displayed_list_of_expenses if
-                                           el[2] == expen_type or expen_type == -1]
+                                           el[2] == self.expen_type or self.expen_type == -1]
+
+        self.expenWidget.setRowCount(len(self.displayed_list_of_expenses))
+
+        rez_expen = 0
 
         for i, string in enumerate(self.displayed_list_of_expenses):
-            self.expenWidget.setRowCount(i + 1)
             checkbox_item = QTableWidgetItem()
             checkbox_item.setFlags(
                 QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled)
             checkbox_item.setCheckState(QtCore.Qt.Unchecked)  # устанавливаем галочки для удаления расходов
+            rez_expen += string[4]
             for j, el in enumerate(
                     (string[1], intDate_to_str(string[3]), string[4], self.sql.get_name_expend_by_id(string[2]))):
                 self.expenWidget.setItem(i, j, QTableWidgetItem(str(el)))
+
             self.expenWidget.setItem(i, 4, checkbox_item)
         self.expenWidget.resizeColumnsToContents()
+        self.rez_expen_label.setText(f'Итого: {rez_expen}')
 
         self.incomeWidget.setColumnCount(5)
         self.incomeWidget.setHorizontalHeaderLabels(["название", "дата", "сумма", "тип"])
         for el in income_list:
             if el[3] <= now_date_to_int():
                 self.s += el[4]  # прибавляем сумму доходов
-        self.displayed_list_of_incomes = [el for el in income_list if income_date_begin <= el[3] <= income_date_end]
+        # Отделяем нужное по дате и типу создаём список, для таблицы
+        self.displayed_list_of_incomes = [el for el in income_list if
+                                          self.income_date_begin <= el[3] <= self.income_date_end]
+        self.displayed_list_of_incomes = [el for el in self.displayed_list_of_incomes if
+                                          el[2] == self.income_type or self.income_type == -1]
+        self.incomeWidget.setRowCount(len(self.displayed_list_of_incomes))
+
+        rez_income = 0
 
         for i, string in enumerate(self.displayed_list_of_incomes):
-            self.incomeWidget.setRowCount(i + 1)
             checkbox_item = QTableWidgetItem()
             checkbox_item.setFlags(
                 QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled)
             checkbox_item.setCheckState(QtCore.Qt.Unchecked)  # устанавливаем галочки для удаления доходов
+            rez_income += string[4]
             for j, el in enumerate(
                     (string[1], intDate_to_str(string[3]), string[4], self.sql.get_name_expend_by_id(string[2]))):
                 self.incomeWidget.setItem(i, j, QTableWidgetItem(str(el)))
+
             self.incomeWidget.setItem(i, 4, checkbox_item)
         self.incomeWidget.resizeColumnsToContents()
+
+        self.rez_income_label.setText(f'Итого: {rez_income}')
+
         self.balanceLabel.setText(f"Ваш текущий баланс: {(self.balance + self.s):.{2}f}")
 
-    def main_window(self, id_, login, password, balance):  #
+    def main_window(self, id_, login, password, balance):  # Основное окно программы
 
         uic.loadUi("main.ui", self)
         self.login = login
@@ -153,21 +178,17 @@ class Main(QMainWindow):
             "По увеличению даты": lambda x: x[3],
             "По уменьшению даты": lambda x: -1 * x[3],
             "По увеличению суммы": lambda x: x[4],
-            "По уменшении суммы": lambda x: -1 * x[4],
+            "по уменьшению суммы": lambda x: -1 * x[4],
             "По алфавиту": lambda x: x[1]
-        }
+        }  # Словарь с названиями и функциями сортировки для отображения в таблице
         self.sort_expen_comboBox.addItems(self.sort_dict.keys())
         self.sort_income_comboBox.addItems(self.sort_dict.keys())
 
-        self.addExpenButton.clicked.connect(self.add_expen_dialog_window)
-        self.addIncomeButton.clicked.connect(self.add_income_dialog_window)
-
-        self.sort_expen_comboBox.currentTextChanged.connect(self.update_table_list)
-        self.sort_income_comboBox.currentTextChanged.connect(self.update_table_list)
+        self.addExpenButton.clicked.connect(self.add_expen_dialog_window)  # добавление нового расхода
+        self.addIncomeButton.clicked.connect(self.add_income_dialog_window)  # добавление нового дохода
 
         self.infoButton.clicked.connect(self.addition_menu)
         self.changeBalanceButton.clicked.connect(self.change_balance)
-        self.statisticButton.clicked.connect(self.get_statistic_info)
 
         self.deleteExpenButton.clicked.connect(self.delete_expen)
         self.deleteIncomeButton.clicked.connect(self.delete_income)
@@ -175,18 +196,90 @@ class Main(QMainWindow):
         self.expenDateEnd.setDate(QDate(*now_date()))
         self.incomeDateEnd.setDate(QDate(*now_date()))
 
+        self.type_expen_comboBox.addItems(['Все'] + [el[1] for el in self.sql.get_all_expend_list()])
+        self.type_income_comboBox.addItems(['Все'] + [el[1] for el in self.sql.get_all_income_list()])
+
+        # Обновление таблицы, при изменении параметров отображения
+        self.sort_expen_comboBox.currentTextChanged.connect(self.update_table_list)
+        self.sort_income_comboBox.currentTextChanged.connect(self.update_table_list)
         self.expenDateBegin.editingFinished.connect(self.update_table_list)
         self.expenDateEnd.editingFinished.connect(self.update_table_list)
         self.incomeDateBegin.editingFinished.connect(self.update_table_list)
         self.incomeDateEnd.editingFinished.connect(self.update_table_list)
-
-        self.type_expen_comboBox.addItems([el[1] for el in self.sql.get_all_expend_list()])
-        self.type_income_comboBox.addItems([el[1] for el in self.sql.get_all_income_list()])
-
         self.type_expen_comboBox.currentTextChanged.connect(self.update_table_list)
         self.type_income_comboBox.currentTextChanged.connect(self.update_table_list)
 
+        self.save_pdf_pushButton.clicked.connect(self.save_pdf)
+
         self.update_table_list()
+
+    def save_pdf(self):
+        ans_user, ok_pressed = QInputDialog.getItem(
+            self, " Выберите вариант", "Что сохранить?",
+            ("Только расходы", "Только доходы", "Всё"), 1, False)
+        if ok_pressed:
+            if ans_user == "Только расходы":
+                with open("text.html", 'w', encoding='utf-8') as f_html:
+                    print(self.creat_expen_html(), file=f_html)
+            elif ans_user == "Только доходы":
+                with open("text.html", 'w', encoding='utf-8') as f_html:
+                    print(self.creat_income_html(), file=f_html)
+            else:
+                with open("text.html", 'w', encoding='utf-8') as f_html:
+                    print(self.creat_expen_html(), file=f_html)
+                    print("<p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p>", file=f_html)
+                    print(self.creat_income_html(), file=f_html)
+            file_out_name = QFileDialog.getSaveFileName(self, "Введите название файла", '', 'PDF (*.pdf)')[0]
+            if file_out_name:
+                # qd = QDialog(self)
+                # qd.setGeometry(500, 500, 300, 300)
+                # lab = QLabel(qd)
+                # lab.setGeometry(10, 10, 280, 280)
+                # lab.setText("Подождите, идёт сохранение файла...")
+                # qd.exec()
+                path = os.path.abspath('text.html')
+                converter.convert(f'file:///{path}', file_out_name)
+                # qd.close()
+
+    def creat_expen_html(self):  # Возвращает текст в формате HTML для расходов
+        expen_date_begin_str = intDate_to_str(self.expen_date_begin)  # дата начала в виде строки
+        expen_date_end_str = intDate_to_str(self.expen_date_end)  # Дата конца в виде строки
+        type_expen_str = 'Все'
+        if self.expen_type != -1:
+            type_expen_str = self.sql.get_name_expend_by_id(self.expen_type)
+        html_text = f"""
+        <h2><strong><span style="color: #ff0000;">{'Расходы'}</span>.</strong></h2>
+        <p>&nbsp;</p>
+        <h3>В период времени:</h3>
+        <p>&nbsp; &nbsp; С {expen_date_begin_str}</p>
+        <p>&nbsp; &nbsp; По {expen_date_end_str}</p>
+        <p>&nbsp;</p>
+        <h3>По категории: <em><span style="background-color: #ffff00;">{type_expen_str}</span></em></h3>"""
+        for i, el in enumerate(self.displayed_list_of_expenses):
+            dt_ = intDate_to_str(int(el[3]))
+            html_text += f"<p>&nbsp; &nbsp; {i + 1}) {el[1]}&nbsp; &nbsp; {el[4]} руб&nbsp; &nbsp; {dt_}</p>"
+        html_text += "<p>&nbsp;&nbsp;</p>"
+        return html_text
+
+    def creat_income_html(self):  # Возвращает текст в формате HTML для расходов
+        income_date_begin_str = intDate_to_str(self.income_date_begin)  # дата начала в виде строки
+        income_date_end_str = intDate_to_str(self.income_date_end)  # Дата конца в виде строки
+        type_income_str = 'Все'
+        if self.income_type != -1:
+            type_income_str = self.sql.get_name_expend_by_id(self.income_type)
+        html_text = f"""
+        <h2><strong><span style="color: #ff0000;">{'Доходы'}</span>.</strong></h2>
+        <p>&nbsp;</p>
+        <h3>В период времени:</h3>
+        <p>&nbsp; &nbsp; С {income_date_begin_str}</p>
+        <p>&nbsp; &nbsp; По {income_date_end_str}</p>
+        <p>&nbsp;</p>
+        <h3>По категории: <em><span style="background-color: #ffff00;">{type_income_str}</span></em></h3>"""
+        for i, el in enumerate(self.displayed_list_of_incomes):
+            dt_ = intDate_to_str(int(el[3]))
+            html_text += f"<p>&nbsp; &nbsp; {i + 1}) {el[1]}&nbsp; &nbsp; {el[4]} руб&nbsp; &nbsp; {dt_}</p>"
+        html_text += "<p>&nbsp;&nbsp;</p>"
+        return html_text
 
     def delete_expen(self):
         for i in range(self.expenWidget.rowCount()):
@@ -199,12 +292,6 @@ class Main(QMainWindow):
             if self.incomeWidget.item(i, 4).checkState() == Qt.Checked:
                 self.sql.delete_income(self.login, self.displayed_list_of_incomes[i][0])
         self.update_table_list()
-
-    def get_statistic_info(self):
-        qd = QDialog(self)
-        lb = QLabel(qd)
-        lb.setText("доделать!")
-        qd.exec()
 
     def change_balance(self):
         bal, ok_pressed = QInputDialog.getDouble(
@@ -297,7 +384,7 @@ class Main(QMainWindow):
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    ex = Main()
+    ex = MainWindow()
     ex.show()
     sys.excepthook = except_hook
     sys.exit(app.exec())

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>802</width>
-    <height>677</height>
+    <width>858</width>
+    <height>757</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -23,10 +23,10 @@
    <enum>Qt::CustomContextMenu</enum>
   </property>
   <property name="windowTitle">
-   <string>Финансовый помошник</string>
+   <string>Финансовый ассистент</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">alternate-background-color: qlineargradient(spread:reflect, x1:0, y1:0, x2:1, y2:1, stop:0.102273 rgba(221, 255, 242, 118), stop:1 rgba(255, 255, 255, 255));</string>
+   <string notr="true">font: 10pt &quot;MS Shell Dlg 2&quot;;</string>
   </property>
   <property name="toolButtonStyle">
    <enum>Qt::ToolButtonTextOnly</enum>
@@ -51,25 +51,7 @@
     <property name="verticalSpacing">
      <number>20</number>
     </property>
-    <item row="0" column="0">
-     <widget class="QPushButton" name="infoButton">
-      <property name="maximumSize">
-       <size>
-        <width>50</width>
-        <height>50</height>
-       </size>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">
-font: 20pt &quot;MS Shell Dlg 2&quot;;
-</string>
-      </property>
-      <property name="text">
-       <string>≡</string>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="2">
+    <item row="0" column="4">
      <layout class="QVBoxLayout" name="verticalLayout">
       <property name="leftMargin">
        <number>50</number>
@@ -92,21 +74,17 @@ font: 20pt &quot;MS Shell Dlg 2&quot;;
          <string notr="true">font: 10pt &quot;MS Shell Dlg 2&quot;;</string>
         </property>
         <property name="text">
-         <string>Ваш текущий баланс:</string>
+         <string>Ваш текущий баланс:                 </string>
         </property>
        </widget>
       </item>
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
-         <widget class="QPushButton" name="statisticButton">
-          <property name="text">
-           <string>Статистика</string>
-          </property>
-         </widget>
-        </item>
-        <item>
          <widget class="QPushButton" name="changeBalanceButton">
+          <property name="styleSheet">
+           <string notr="true">color : rgb(0, 0, 48)</string>
+          </property>
           <property name="text">
            <string>Изменить</string>
           </property>
@@ -116,14 +94,25 @@ font: 20pt &quot;MS Shell Dlg 2&quot;;
       </item>
      </layout>
     </item>
-    <item row="0" column="1">
-     <widget class="QLabel" name="out_label">
+    <item row="0" column="0">
+     <widget class="QPushButton" name="infoButton">
+      <property name="maximumSize">
+       <size>
+        <width>50</width>
+        <height>50</height>
+       </size>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">
+font: 20pt &quot;MS Shell Dlg 2&quot;;
+</string>
+      </property>
       <property name="text">
-       <string/>
+       <string>≡</string>
       </property>
      </widget>
     </item>
-    <item row="1" column="0" colspan="3">
+    <item row="1" column="0" colspan="5">
      <layout class="QGridLayout" name="gridLayout_3">
       <property name="horizontalSpacing">
        <number>20</number>
@@ -137,21 +126,35 @@ font: 20pt &quot;MS Shell Dlg 2&quot;;
       <item row="3" column="1">
        <widget class="QComboBox" name="type_income_comboBox"/>
       </item>
-      <item row="0" column="1">
-       <widget class="QPushButton" name="addIncomeButton">
+      <item row="2" column="1">
+       <widget class="QLabel" name="label_10">
         <property name="styleSheet">
          <string notr="true">font: 10pt &quot;MS Shell Dlg 2&quot;;</string>
         </property>
         <property name="text">
-         <string>Добавить доход</string>
+         <string>Тип доходов:</string>
         </property>
        </widget>
       </item>
-      <item row="5" column="0">
-       <widget class="QComboBox" name="sort_expen_comboBox"/>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label">
+        <property name="styleSheet">
+         <string notr="true">font: 10pt &quot;MS Shell Dlg 2&quot;;</string>
+        </property>
+        <property name="text">
+         <string>Тип расходов:</string>
+        </property>
+       </widget>
       </item>
-      <item row="5" column="1">
-       <widget class="QComboBox" name="sort_income_comboBox"/>
+      <item row="4" column="1">
+       <widget class="QLabel" name="label_9">
+        <property name="styleSheet">
+         <string notr="true">font: 10pt &quot;MS Shell Dlg 2&quot;;</string>
+        </property>
+        <property name="text">
+         <string>Отсортировать по:</string>
+        </property>
+       </widget>
       </item>
       <item row="0" column="0">
        <widget class="QPushButton" name="addExpenButton">
@@ -159,9 +162,25 @@ font: 20pt &quot;MS Shell Dlg 2&quot;;
          <string notr="true">font: 10pt &quot;MS Shell Dlg 2&quot;;</string>
         </property>
         <property name="text">
-         <string>Добавить расход</string>
+         <string>Добавить расход ✔</string>
         </property>
        </widget>
+      </item>
+      <item row="5" column="0">
+       <widget class="QComboBox" name="sort_expen_comboBox"/>
+      </item>
+      <item row="0" column="1">
+       <widget class="QPushButton" name="addIncomeButton">
+        <property name="styleSheet">
+         <string notr="true">font: 10pt &quot;MS Shell Dlg 2&quot;;</string>
+        </property>
+        <property name="text">
+         <string>Добавить доход ✔</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="1">
+       <widget class="QComboBox" name="sort_income_comboBox"/>
       </item>
       <item row="4" column="0">
        <widget class="QLabel" name="label_8">
@@ -201,6 +220,9 @@ font: 20pt &quot;MS Shell Dlg 2&quot;;
        <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>
          <widget class="QLabel" name="label_3">
+          <property name="styleSheet">
+           <string notr="true">font: 10pt &quot;MS Shell Dlg 2&quot;;</string>
+          </property>
           <property name="text">
            <string>Расходы:</string>
           </property>
@@ -210,11 +232,17 @@ font: 20pt &quot;MS Shell Dlg 2&quot;;
          <layout class="QGridLayout" name="gridLayout">
           <item row="0" column="0">
            <widget class="QTableWidget" name="expenWidget">
-            <property name="mouseTracking">
+            <property name="enabled">
              <bool>true</bool>
             </property>
+            <property name="mouseTracking">
+             <bool>false</bool>
+            </property>
             <property name="tabletTracking">
-             <bool>true</bool>
+             <bool>false</bool>
+            </property>
+            <property name="focusPolicy">
+             <enum>Qt::NoFocus</enum>
             </property>
             <property name="autoFillBackground">
              <bool>true</bool>
@@ -264,10 +292,33 @@ font: 20pt &quot;MS Shell Dlg 2&quot;;
         </item>
        </layout>
       </item>
+      <item row="1" column="0">
+       <widget class="QPushButton" name="deleteExpenButton">
+        <property name="styleSheet">
+         <string notr="true">font: 10pt &quot;MS Shell Dlg 2&quot;;</string>
+        </property>
+        <property name="text">
+         <string>Удалить выбранные расходы ❌</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QPushButton" name="deleteIncomeButton">
+        <property name="styleSheet">
+         <string notr="true">font: 10pt &quot;MS Shell Dlg 2&quot;;</string>
+        </property>
+        <property name="text">
+         <string>Удалить выбранные доходы ❌</string>
+        </property>
+       </widget>
+      </item>
       <item row="7" column="1">
        <layout class="QVBoxLayout" name="verticalLayout_3">
         <item>
          <widget class="QLabel" name="label_4">
+          <property name="styleSheet">
+           <string notr="true">font: 10pt &quot;MS Shell Dlg 2&quot;;</string>
+          </property>
           <property name="text">
            <string>Доходы:</string>
           </property>
@@ -277,11 +328,17 @@ font: 20pt &quot;MS Shell Dlg 2&quot;;
          <layout class="QGridLayout" name="gridLayout_2">
           <item row="0" column="0">
            <widget class="QTableWidget" name="incomeWidget">
-            <property name="mouseTracking">
+            <property name="enabled">
              <bool>true</bool>
             </property>
+            <property name="mouseTracking">
+             <bool>false</bool>
+            </property>
             <property name="tabletTracking">
-             <bool>true</bool>
+             <bool>false</bool>
+            </property>
+            <property name="focusPolicy">
+             <enum>Qt::NoFocus</enum>
             </property>
             <property name="contextMenuPolicy">
              <enum>Qt::DefaultContextMenu</enum>
@@ -301,53 +358,41 @@ font: 20pt &quot;MS Shell Dlg 2&quot;;
         </item>
        </layout>
       </item>
-      <item row="1" column="0">
-       <widget class="QPushButton" name="deleteExpenButton">
+      <item row="8" column="0">
+       <widget class="QLabel" name="rez_expen_label">
         <property name="styleSheet">
-         <string notr="true">font: 10pt &quot;MS Shell Dlg 2&quot;;</string>
+         <string notr="true">font: 11pt &quot;MS Shell Dlg 2&quot;;</string>
         </property>
         <property name="text">
-         <string>Удалить выбранные расходы</string>
+         <string>Итого:</string>
         </property>
        </widget>
       </item>
-      <item row="1" column="1">
-       <widget class="QPushButton" name="deleteIncomeButton">
+      <item row="8" column="1">
+       <widget class="QLabel" name="rez_income_label">
         <property name="styleSheet">
-         <string notr="true">font: 10pt &quot;MS Shell Dlg 2&quot;;</string>
+         <string notr="true">font: 11pt &quot;MS Shell Dlg 2&quot;;</string>
         </property>
         <property name="text">
-         <string>Удалить выбранные доходы</string>
+         <string>Итого:</string>
         </property>
        </widget>
       </item>
-      <item row="4" column="1">
-       <widget class="QLabel" name="label_9">
-        <property name="styleSheet">
-         <string notr="true">font: 10pt &quot;MS Shell Dlg 2&quot;;</string>
-        </property>
+     </layout>
+    </item>
+    <item row="0" column="2">
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <item>
+       <widget class="QPushButton" name="save_pdf_pushButton">
         <property name="text">
-         <string>Отсортировать по:</string>
+         <string>  Сохранить в PDF </string>
         </property>
        </widget>
       </item>
-      <item row="2" column="0">
-       <widget class="QLabel" name="label">
-        <property name="styleSheet">
-         <string notr="true">font: 10pt &quot;MS Shell Dlg 2&quot;;</string>
-        </property>
+      <item>
+       <widget class="QPushButton" name="print_pushButton_2">
         <property name="text">
-         <string>Тип доходов:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="1">
-       <widget class="QLabel" name="label_10">
-        <property name="styleSheet">
-         <string notr="true">font: 10pt &quot;MS Shell Dlg 2&quot;;</string>
-        </property>
-        <property name="text">
-         <string>Тип расходов:</string>
+         <string> Печать </string>
         </property>
        </widget>
       </item>
@@ -361,16 +406,10 @@ font: 20pt &quot;MS Shell Dlg 2&quot;;
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>802</width>
-     <height>21</height>
+     <width>858</width>
+     <height>22</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menuMenu">
-    <property name="title">
-     <string>Menu</string>
-    </property>
-   </widget>
-   <addaction name="menuMenu"/>
   </widget>
  </widget>
  <resources/>

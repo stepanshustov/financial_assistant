@@ -19,21 +19,30 @@ def intDate_to_str(dt: int):
     month = '0' + str(dt // 100 % 100)
     year = '000' + str(dt // 10000)
     return f"{day[-2:]}.{month[-2:]}.{year[-4:]}"
+def date_to_int(date: QDateEdit):
+    return date.date().year() * 10000 + date.date().month() * 100 + date.date().day()
+
 
 
 creat_info_text = """Привет, я Шустов Степан - ученик Яндекс Лицея.
-         А так же единственный и неповторимый создатель этого проекта!"""
+         А так же создатель этого проекта!"""
 
 project_info_text = """Это программа поможет вам учитывать и следить за своими финансами"""
 
 check_char = {':', '.', '-', '+', '=', '?', '!', '_', '*'}  # допустимые символы для логина и пароля
 
+template_html = """
+<h2><strong><span style="color: #ff0000;">Расходы</span>.</strong></h2>
+<p>&nbsp;</p>
+<h3>В период времени:</h3>
+<p>&nbsp; &nbsp; С 20.11.2023</p>
+<p>&nbsp; &nbsp; По 12.01.2024</p>
+<p>&nbsp;</p>
+<h3>По категории: <em><span style="background-color: #ffff00;">Продукты питания</span></em></h3>
+<p>&nbsp;&nbsp;</p>"""
 
-def date_to_int(date: QDateEdit):
-    return date.date().year() * 10000 + date.date().month() * 100 + date.date().day()
 
-
-class Sql:
+class Sql_users:
     def __init__(self, file_name: str):
         self.file_name = file_name
         self.con = sqlite3.connect(file_name)
@@ -86,6 +95,12 @@ class Sql:
 
     def get_name_income_by_id(self, id_: int):  # Название дохода по его id
         return self.cur.execute(f"""SELECT title FROM type_income WHERE id = {id_}""").fetchall()[0][0]
+
+    def get_id_expen_by_name(self, name_: str):  # id дохода по его названию
+        return self.cur.execute(f"""SELECT id FROM type_expend WHERE title = '{name_}'""").fetchall()[0][0]
+
+    def get_id_income_by_name(self, name_: str):  # id расхода по его названию
+        return self.cur.execute(f"""SELECT id FROM type_income WHERE title = '{name_}'""").fetchall()[0][0]
 
     def get_all_expend_list(self):  # Возвращает список всех типов расходов
         return self.cur.execute("SELECT * FROM type_expend ORDER BY title").fetchall()
