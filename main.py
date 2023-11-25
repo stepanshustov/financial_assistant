@@ -21,7 +21,6 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.start_window()
         self.sql = Sql_users("users.sqlite")
-        print(self.sql.get_users())
 
     def start_window(self):  # создание главного окна
         uic.loadUi('start_window.ui', self)
